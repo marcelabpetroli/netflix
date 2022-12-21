@@ -11,12 +11,25 @@ server.use(express.json());
 const serverPort = 4000;
 
 server.get('/movies', (req, res) => {
-  res.json({
-    success: true,
-    movies: moviesData,
-  });
+  const genderFilterParam = req.query.gender;
+  const filteredMoviesByGender = moviesData.filter((movies) => movies.gender.toLowerCase() === genderFilterParam);
+
+  if (genderFilterParam === '') {
+    res.json({
+      success: true,
+      movies: moviesData,
+    });
+  } else {
+    res.json({
+      success: true,
+      movies: filteredMoviesByGender,
+    });
+  }
 });
 
 server.listen(serverPort, () => {
   console.log(`Server listening at http://localhost:${serverPort}`);
 });
+
+const staticServer = './src/public-react';
+server.use(express.static(staticServer));
