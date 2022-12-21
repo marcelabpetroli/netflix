@@ -10,5 +10,17 @@
     "title": "Friends",
     "gender": "Comedia",
     "image": "//localhost:4000/friends.jpeg"
+  },
+  {
+    "id": "3",
+    "title": "Titanic",
+    "gender": "Drama",
+    "image": "//localhost:4000/gambita-de-dama.jpeg"
+  },
+  {
+    "id": "4",
+    "title": "Avatar",
+    "gender": "Comedia",
+    "image": "//localhost:4000/gambita-de-dama.jpeg"
   }
 ]

@@ -12,17 +12,33 @@ const serverPort = 4000;
 
 server.get('/movies', (req, res) => {
   const genderFilterParam = req.query.gender;
+  const sortFilterParam = req.query.sort;
+
+  function compare(a, b) {
+    if (a.title < b.title) {
+      return -1;
+    }
+    if (a.title > b.title) {
+      return 1;
+    }
+    return 0;
+  }
+
+  // const sortedMoviesAsc = moviesData.sort(compare);
+
+  // const sortedMoviesDesc = moviesData.reverse();
+
   const filteredMoviesByGender = moviesData.filter((movies) => movies.gender.toLowerCase() === genderFilterParam);
 
   if (genderFilterParam === '') {
     res.json({
       success: true,
-      movies: moviesData,
+      movies: sortFilterParam === 'asc' ? moviesData.sort(compare) : moviesData.reverse(compare),
     });
   } else {
     res.json({
       success: true,
-      movies: filteredMoviesByGender,
+      movies: sortFilterParam === 'asc' ? filteredMoviesByGender.sort(compare) : filteredMoviesByGender.reverse(compare),
     });
   }
 });
