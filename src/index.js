@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
-const moviesData = require('./data/movies.json');
+// const moviesData = require('./data/movies.json');
+const Database = require('better-sqlite3');
 
 // create and config server
 const server = express();
@@ -16,37 +17,38 @@ server.listen(serverPort, () => {
 //Instalación del motor de plantillas
 server.set('view engine', 'ejs');
 
+// init and config data base
+const db = new Database('./src/database.db', {
+  // comment next line to hide data base logs in console
+  verbose: console.log,
+});
+
 //End points
 server.get('/movies', (req, res) => {
   const genderFilterParam = req.query.gender;
   const sortFilterParam = req.query.sort;
-  function compare(a, b) {
-    if (a.title < b.title) {
-      return -1;
-    }
-    if (a.title > b.title) {
-      return 1;
-    }
-    return 0;
-  }
-  const filteredMoviesByGender = moviesData.filter(
-    (movie) => movie.gender.toLowerCase() === genderFilterParam
-  );
+
+  const queryGenderAsc = db.prepare('SELECT * FROM movies WHERE gender = ? AND ORDER BY name ASC');
+  const moviesGenderAsc = query.all(genderFilterParam);
+
+  const queryGenderDesc = db.prepare('SELECT * FROM movies WHERE gender = ? AND ORDER BY name DESC');
+  const moviesGenderDesc = query.all(genderFilterParam);
+
+  const querySortAsc = db.prepare('SELECT * FROM movies ORDER BY name ASC');
+  const moviesSortAsc = query.all();
+
+  const querySortDesc = db.prepare('SELECT * FROM movies ORDER BY name DESC');
+  const moviesSortDesc = query.all();
+
   if (genderFilterParam === '') {
     res.json({
       success: true,
-      movies:
-        sortFilterParam === 'asc'
-          ? moviesData.sort(compare)
-          : moviesData.reverse(compare),
+      movies: sortFilterParam === 'asc' ? moviesSortAsc : moviesSortDesc,
     });
   } else {
     res.json({
       success: true,
-      movies:
-        sortFilterParam === 'asc'
-          ? filteredMoviesByGender.sort(compare)
-          : filteredMoviesByGender.reverse(compare),
+      movies: sortFilterParam === 'asc' ? moviesGenderAsc : moviesGenderDesc,
     });
   }
 });

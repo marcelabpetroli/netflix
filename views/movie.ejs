@@ -1,31 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- <link rel="stylesheet" href="http://beta.adalab.es/resources/stylesheets/all.css" /> -->
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Detalle de película</title>
-    <link rel="stylesheet" href="/movie.css">
-    <!-- No está funcionando la importanción de estilos y hemos importado los estilos de los profes -->
-</head>
+    <link rel="stylesheet" href="/movie.css" />
+  </head>
 
-<body>
+  <body>
     <main class="main">
-        <h1 class="title-movie">Detalle de la película</h1>
-        <section class="card">
-            <img class="card__img" src="<%= image %>" alt="Imagen de <%= title %>">
-            <div class="card__info">
-                <h2 class="card__title">
-                    <%= title %>
-                </h2>
-                <p class="card__gender">Género: <%= gender %>
-                </p>
-            </div>
-        </section>
+      <h1 class="title-movie">Detalle de la película</h1>
+      <section class="card">
+        <img class="card__img" src="<%= image %>" alt="Imagen de <%= title %>" />
+        <div class="card__info">
+          <h2 class="card__title"><%= title %></h2>
+          <p class="card__gender">Género: <%= gender %></p>
+        </div>
+      </section>
     </main>
-
-</body>
-
+  </body>
 </html>
