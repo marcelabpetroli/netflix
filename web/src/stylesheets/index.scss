@@ -7,3 +7,21 @@
   box-sizing: border-box;
   font-family: 'Roboto', sans-serif;
 }
+.page {
+  background-color: rgb(251, 248, 248);
+}
+.cards {
+  align-items: center;
+  justify-content: flex-start;
+}
+.card {
+  max-width: 200px;
+  margin: 10px;
+}
+.card__title {
+  text-align: center;
+}
+.card__description {
+  text-align: center;
+  color: rgb(83, 105, 110);
+}

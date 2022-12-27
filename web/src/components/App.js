@@ -11,10 +11,11 @@ import SignUp from './SignUp';
 import apiMovies from '../services/api-movies';
 import apiUser from '../services/api-user';
 import router from '../services/router';
+import ls from '../services/local-storage';
 
 const App = () => {
   // state: user
-  const [userId, setUserId] = useState('');
+  const [userId, setUserId] = useState(ls.get('userId', ''));
   const [userName, setUserName] = useState('');
   const [userEmail, setUserEmail] = useState('');
   const [userPassword, setUserPassword] = useState('');
@@ -25,23 +26,23 @@ const App = () => {
   const [signUpErrorMessage, setSignUpErrorMessage] = useState('');
   // state: movies
   const [appMovies, setAppMovies] = useState([]);
-  const [allMoviesOptionGender, setAllMoviesOptionGender] = useState('');
+  const [allMoviesOptiongenre, setAllMoviesOptiongenre] = useState('');
   const [allMoviesOptionSort, setAllMoviesOptionSort] = useState('asc');
 
   /*
   useEffect: obtener las películas del API.
-  Se ejecuta cuando allMoviesOptionGender o allMoviesOptionSort cambian de valor.
+  Se ejecuta cuando allMoviesOptiongenre o allMoviesOptionSort cambian de valor.
   Como queremos que el back devuelva las películas filtradas por género y ordenadas por nombre estamos pasando a getMoviesFromApi estos dos valores.
   */
   useEffect(() => {
     const params = {
-      gender: allMoviesOptionGender,
-      sort: allMoviesOptionSort
+      genre: allMoviesOptiongenre,
+      sort: allMoviesOptionSort,
     };
-    apiMovies.getMoviesFromApi(params).then(response => {
+    apiMovies.getMoviesFromApi(params).then((response) => {
       setAppMovies(response.movies);
     });
-  }, [allMoviesOptionGender, allMoviesOptionSort]);
+  }, [allMoviesOptiongenre, allMoviesOptionSort]);
 
   /*
   useEffect: obtener el perfil de la usuaria.
@@ -50,10 +51,11 @@ const App = () => {
   */
   useEffect(() => {
     if (userId !== '') {
-      apiUser.getProfileFromApi(userId).then(response => {
+      apiUser.getProfileFromApi(userId).then((response) => {
         setUserName(response.name);
         setUserEmail(response.email);
         setUserPassword(response.password);
+        ls.set('userId', userId);
       });
     }
   }, [userId]);
@@ -65,7 +67,7 @@ const App = () => {
   */
   useEffect(() => {
     if (userId !== '') {
-      apiUser.getUserMoviesFromApi(userId).then(response => {
+      apiUser.getUserMoviesFromApi(userId).then((response) => {
         setUserMovies(response.movies);
       });
     }
@@ -76,11 +78,11 @@ const App = () => {
   Con este evento enviamos los datos del login al servidor cuando la usuaria lanza el evento.
   Como queremos que el back devuelva el id de la usuaria sendLoginToApi recibe el email y la contraseña que ella haya escrito.
   */
-  const sendLoginToApi = loginData => {
+  const sendLoginToApi = (loginData) => {
     // Limpiamos el error antes de enviar los datos al API
     setLoginErrorMessage('');
     // Enviamos los datos al API
-    apiUser.sendLoginToApi(loginData).then(response => {
+    apiUser.sendLoginToApi(loginData).then((response) => {
       if (response.success === true) {
         setUserId(response.userId);
         // Si la usuaria introduce bien sus datos redireccionamos desde la página de login al inicio de la página
@@ -97,11 +99,11 @@ const App = () => {
   Con este evento enviamos los datos del sign up al servidor cuando la usuaria lanza el evento.
   Como queremos que el back devuelva el id de la usuaria sendSingUpToApi recibe el email y la contraseña que ella haya escrito.
   */
-  const sendSingUpToApi = data => {
+  const sendSingUpToApi = (data) => {
     // Limpiamos el error antes de enviar los datos al API
     setSignUpErrorMessage('');
     // Enviamos los datos al API
-    apiUser.sendSingUpToApi(data).then(response => {
+    apiUser.sendSingUpToApi(data).then((response) => {
       if (response.success === true) {
         setUserId(response.userId);
         // Si la usuaria introduce bien sus datos redireccionamos desde la página de signup al inicio de la página
@@ -122,7 +124,7 @@ const App = () => {
   const sendProfileToApi = (userId, data) => {
     apiUser.sendProfileToApi(userId, data).then(() => {
       // Después de enviar los datos al servidor los volvemos a pedir al servidor para tenerlos actualizados
-      apiUser.getProfileFromApi(userId).then(response => {
+      apiUser.getProfileFromApi(userId).then((response) => {
         setUserName(response.name);
         setUserEmail(response.email);
         setUserPassword(response.password);
@@ -138,6 +140,7 @@ const App = () => {
   const logout = () => {
     router.redirect('/');
     router.reload();
+    ls.remove('userId', userId);
   };
 
   /*
@@ -145,9 +148,9 @@ const App = () => {
   Aquí solo guardamos los datos en el estado.
   En el primer useEffect le decimos que cuando estos datos cambien vuelva a pedir las películas al API.
   */
-  const handleAllMoviesOptions = data => {
-    if (data.key === 'gender') {
-      setAllMoviesOptionGender(data.value);
+  const handleAllMoviesOptions = (data) => {
+    if (data.key === 'genre') {
+      setAllMoviesOptiongenre(data.value);
     } else if (data.key === 'sort') {
       setAllMoviesOptionSort(data.value);
     }
@@ -163,37 +166,29 @@ const App = () => {
       <Header isUserLogged={!!userId} logout={logout} />
 
       <Routes>
-        <Route exact path="/"
+        <Route
+          exact
+          path='/'
           element={
             <AllMovies
               movies={appMovies}
-              allMoviesOptionGender={allMoviesOptionGender}
+              allMoviesOptiongenre={allMoviesOptiongenre}
               allMoviesOptionSort={allMoviesOptionSort}
               handleAllMoviesOptions={handleAllMoviesOptions}
             />
-          } />
+          }
+        />
 
-        <Route path="/my-movies" element={
-          <MyMovies movies={userMovies} />
-        } />
+        <Route path='/my-movies' element={<MyMovies movies={userMovies} />} />
 
-        <Route path="/login"
-          element=
-          {<Login loginErrorMessage={loginErrorMessage} sendLoginToApi={sendLoginToApi} />} />
+        <Route path='/login' element={<Login loginErrorMessage={loginErrorMessage} sendLoginToApi={sendLoginToApi} />} />
 
-        <Route path="/signup"
-          element={
-            <SignUp signUpErrorMessage={signUpErrorMessage} sendSingUpToApi={sendSingUpToApi} />} />
+        <Route path='/signup' element={<SignUp signUpErrorMessage={signUpErrorMessage} sendSingUpToApi={sendSingUpToApi} />} />
 
-        <Route path="/profile"
-          element={
-            <Profile
-              userName={userName}
-              userEmail={userEmail}
-              userPassword={userPassword}
-              sendProfileToApi={sendProfileToApi}
-            />} />
-
+        <Route
+          path='/profile'
+          element={<Profile userName={userName} userEmail={userEmail} userPassword={userPassword} sendProfileToApi={sendProfileToApi} />}
+        />
       </Routes>
     </>
   );

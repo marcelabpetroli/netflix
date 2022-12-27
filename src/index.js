@@ -1,7 +1,8 @@
 const express = require('express');
 const cors = require('cors');
-// const moviesData = require('./data/movies.json');
+const usersData = require('./data/users.json');
 const Database = require('better-sqlite3');
+const { response } = require('express');
 
 // create and config server
 const server = express();
@@ -23,40 +24,61 @@ const db = new Database('./src/database.db', {
   verbose: console.log,
 });
 
+// function to capitalize 1st letter
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 //End points
 server.get('/movies', (req, res) => {
-  const genderFilterParam = req.query.gender;
-  const sortFilterParam = req.query.sort;
+  const genreFilterParam = req.query.genre;
+  const sortFilterParam = req.query.sort.toUpperCase();
 
-  const queryGenderAsc = db.prepare('SELECT * FROM movies WHERE gender = ? AND ORDER BY name ASC');
-  const moviesGenderAsc = query.all(genderFilterParam);
-
-  const queryGenderDesc = db.prepare('SELECT * FROM movies WHERE gender = ? AND ORDER BY name DESC');
-  const moviesGenderDesc = query.all(genderFilterParam);
-
-  const querySortAsc = db.prepare('SELECT * FROM movies ORDER BY name ASC');
-  const moviesSortAsc = query.all();
-
-  const querySortDesc = db.prepare('SELECT * FROM movies ORDER BY name DESC');
-  const moviesSortDesc = query.all();
-
-  if (genderFilterParam === '') {
-    res.json({
+  if (genreFilterParam !== '') {
+    const queryGenre = db.prepare(`SELECT * FROM movies WHERE genre = ? ORDER BY name ${sortFilterParam}`);
+    const moviesByGenre = queryGenre.all(capitalizeFirstLetter(genreFilterParam));
+    const response = {
       success: true,
-      movies: sortFilterParam === 'asc' ? moviesSortAsc : moviesSortDesc,
-    });
+      movies: moviesByGenre,
+    };
+    res.json(response);
   } else {
-    res.json({
+    const querySort = db.prepare(`SELECT * FROM movies ORDER BY name ${sortFilterParam}`);
+    const moviesSorted = querySort.all();
+    const response = {
       success: true,
-      movies: sortFilterParam === 'asc' ? moviesGenderAsc : moviesGenderDesc,
-    });
+      movies: moviesSorted,
+    };
+    res.json(response);
   }
 });
 
 server.get('/movie/:movieId', (req, res) => {
-  const urlMovieId = req.params.movieId;
-  const foundMovie = moviesData.find((movie) => movie.id === urlMovieId);
-  res.render('movie', foundMovie);
+  const movieId = req.params.movieId;
+
+  const query = db.prepare(`SELECT * FROM movies WHERE id = ?`);
+  const result = query.get(movieId);
+  res.render('movie', result);
+});
+
+server.post('/login', (req, res) => {
+  const userEmail = req.body.email;
+  const userPassword = req.body.password;
+
+  const foundUser = usersData.find((user) => user.email === userEmail && user.password === userPassword);
+  if (foundUser !== undefined) {
+    const responseSuccess = {
+      success: true,
+      userId: 'id_de_la_usuaria_encontrada',
+    };
+    res.json(responseSuccess);
+  } else {
+    const responseError = {
+      success: false,
+      errorMessage: 'Usuaria/o no encontrada/o',
+    };
+    res.json(responseError);
+  }
 });
 
 //Servidores estáticos
