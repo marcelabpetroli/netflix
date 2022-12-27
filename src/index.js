@@ -81,6 +81,18 @@ server.post('/login', (req, res) => {
   }
 });
 
+server.post('/sign-up', (req, res) => {
+  const userEmail = req.body.email;
+  const userPassword = req.body.password;
+
+  const query = db.prepare('INSERT INTO users (email, password) VALUES (?, ?');
+  const result = query.run(userEmail, userPassword);
+  res.json({
+    success: true,
+    userId: result,
+  });
+});
+
 //Servidores estáticos
 const staticServer = './src/public-react';
 server.use(express.static(staticServer));
