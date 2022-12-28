@@ -34,15 +34,21 @@ server.get('/movies', (req, res) => {
   const sortFilterParam = req.query.sort.toUpperCase();
 
   if (genreFilterParam !== '') {
-    const queryGenre = db.prepare(`SELECT * FROM movies WHERE genre = ? ORDER BY name ${sortFilterParam}`);
-    const moviesByGenre = queryGenre.all(capitalizeFirstLetter(genreFilterParam));
+    const queryGenre = db.prepare(
+      `SELECT * FROM movies WHERE genre = ? ORDER BY name ${sortFilterParam}`
+    );
+    const moviesByGenre = queryGenre.all(
+      capitalizeFirstLetter(genreFilterParam)
+    );
     const response = {
       success: true,
       movies: moviesByGenre,
     };
     res.json(response);
   } else {
-    const querySort = db.prepare(`SELECT * FROM movies ORDER BY name ${sortFilterParam}`);
+    const querySort = db.prepare(
+      `SELECT * FROM movies ORDER BY name ${sortFilterParam}`
+    );
     const moviesSorted = querySort.all();
     const response = {
       success: true,
@@ -64,7 +70,9 @@ server.post('/login', (req, res) => {
   const userEmail = req.body.email;
   const userPassword = req.body.password;
 
-  const queryUser = db.prepare('SELECT * FROM users WHERE email = ? AND password = ?');
+  const queryUser = db.prepare(
+    'SELECT * FROM users WHERE email = ? AND password = ?'
+  );
   const result = queryUser.get(userEmail, userPassword);
 
   if (result !== undefined) {
@@ -86,13 +94,15 @@ server.post('/sign-up', (req, res) => {
   const userEmail = req.body.email;
   const userPassword = req.body.password;
 
-  const queryIsUser = db.prepare('SELECT * FROM users WHERE email = ? AND password = ?');
+  const queryIsUser = db.prepare(
+    'SELECT * FROM users WHERE email = ? AND password = ?'
+  );
   const isUser = queryIsUser.get(userEmail, userPassword);
 
-  console.log(isUser);
-
   if (isUser === undefined) {
-    const queryNewUser = db.prepare('INSERT INTO users (email, password) VALUES (?, ?)');
+    const queryNewUser = db.prepare(
+      'INSERT INTO users (email, password) VALUES (?, ?)'
+    );
     const result = queryNewUser.run(userEmail, userPassword);
     res.json({
       success: true,
@@ -105,6 +115,13 @@ server.post('/sign-up', (req, res) => {
     });
   }
 });
+
+// server.get('/user/movies', (req, res) => {
+//   res.json({
+//     success: true,
+//     movies: [],
+//   });
+// });
 
 //Servidores estáticos
 const staticServer = './src/public-react';
