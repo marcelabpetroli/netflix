@@ -116,12 +116,24 @@ server.post('/sign-up', (req, res) => {
   }
 });
 
-// server.get('/user/movies', (req, res) => {
-//   res.json({
-//     success: true,
-//     movies: [],
-//   });
-// });
+server.post('/user/profile', (req, res) => {
+  const userObject = req.body;
+  const userId = req.headers['user-id'];
+
+  const query = db.prepare(
+    'UPDATE users SET name=?, email=?, password=? WHERE id=?'
+  );
+  const result = query.run(
+    userObject.name,
+    userObject.email,
+    userObject.password,
+    userId
+  );
+
+  res.json({
+    success: true,
+  });
+});
 
 //Servidores estáticos
 const staticServer = './src/public-react';

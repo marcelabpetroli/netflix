@@ -168,7 +168,7 @@ const App = () => {
       <Routes>
         <Route
           exact
-          path='/'
+          path="/"
           element={
             <AllMovies
               movies={appMovies}
@@ -179,15 +179,39 @@ const App = () => {
           }
         />
 
-        <Route path='/my-movies' element={<MyMovies movies={userMovies} />} />
-
-        <Route path='/login' element={<Login loginErrorMessage={loginErrorMessage} sendLoginToApi={sendLoginToApi} />} />
-
-        <Route path='/signup' element={<SignUp signUpErrorMessage={signUpErrorMessage} sendSingUpToApi={sendSingUpToApi} />} />
+        <Route path="/my-movies" element={<MyMovies movies={userMovies} />} />
 
         <Route
-          path='/profile'
-          element={<Profile userName={userName} userEmail={userEmail} userPassword={userPassword} sendProfileToApi={sendProfileToApi} />}
+          path="/login"
+          element={
+            <Login
+              loginErrorMessage={loginErrorMessage}
+              sendLoginToApi={sendLoginToApi}
+            />
+          }
+        />
+
+        <Route
+          path="/signup"
+          element={
+            <SignUp
+              signUpErrorMessage={signUpErrorMessage}
+              sendSingUpToApi={sendSingUpToApi}
+            />
+          }
+        />
+
+        <Route
+          path="/profile"
+          element={
+            <Profile
+              userId={userId}
+              userName={userName}
+              userEmail={userEmail}
+              userPassword={userPassword}
+              sendProfileToApi={sendProfileToApi}
+            />
+          }
         />
       </Routes>
     </>

@@ -33,13 +33,14 @@ const sendSingUpToApi = (data) => {
 // profile
 
 const sendProfileToApi = (userId, data) => {
+  console.log('Se están enviando datos al profile:', userId, data);
   return fetch('http://localhost:4000/user/profile', {
     method: 'POST',
-    body: JSON.stringify(data),
     headers: {
       'Content-Type': 'application/json',
       'user-id': userId,
     },
+    body: JSON.stringify(data),
   })
     .then((response) => response.json())
     .then((data) => {
