@@ -135,6 +135,15 @@ server.post('/user/profile', (req, res) => {
   });
 });
 
+server.get('/user/profile', (req, res) => {
+  const userId = req.headers['user-id'];
+
+  const query = db.prepare('SELECT * FROM users WHERE id=?');
+  const result = query.get(userId);
+
+  res.json(result);
+});
+
 //Servidores estáticos
 const staticServer = './src/public-react';
 server.use(express.static(staticServer));
