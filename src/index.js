@@ -1,6 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const usersData = require('./data/users.json');
 const Database = require('better-sqlite3');
 const { response } = require('express');
 
@@ -65,11 +64,13 @@ server.post('/login', (req, res) => {
   const userEmail = req.body.email;
   const userPassword = req.body.password;
 
-  const foundUser = usersData.find((user) => user.email === userEmail && user.password === userPassword);
-  if (foundUser !== undefined) {
+  const queryUser = db.prepare('SELECT * FROM users WHERE email = ? AND password = ?');
+  const result = queryUser.get(userEmail, userPassword);
+
+  if (result !== undefined) {
     const responseSuccess = {
       success: true,
-      userId: 'id_de_la_usuaria_encontrada',
+      userId: result.id,
     };
     res.json(responseSuccess);
   } else {
@@ -85,12 +86,24 @@ server.post('/sign-up', (req, res) => {
   const userEmail = req.body.email;
   const userPassword = req.body.password;
 
-  const query = db.prepare('INSERT INTO users (email, password) VALUES (?, ?');
-  const result = query.run(userEmail, userPassword);
-  res.json({
-    success: true,
-    userId: result,
-  });
+  const queryIsUser = db.prepare('SELECT * FROM users WHERE email = ? AND password = ?');
+  const isUser = queryIsUser.get(userEmail, userPassword);
+
+  console.log(isUser);
+
+  if (isUser === undefined) {
+    const queryNewUser = db.prepare('INSERT INTO users (email, password) VALUES (?, ?)');
+    const result = queryNewUser.run(userEmail, userPassword);
+    res.json({
+      success: true,
+      userId: result.lastInsertRowid,
+    });
+  } else {
+    res.json({
+      success: false,
+      errorMessage: 'Usuaria ya existente',
+    });
+  }
 });
 
 //Servidores estáticos
