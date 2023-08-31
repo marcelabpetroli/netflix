@@ -1,4 +1,7 @@
-# Ejercicio de Netflix
+# Ejercicio de Netflix - ADALAB Módulo 4 
+
+## Acerca del Proyecto
+Para el módulo final del bootcamp, hemos seguido meticulosamente los pasos proporcionados para desarrollar un modelo básico de la aplicación de Netflix. Utilizamos tecnologías como React para el desarrollo del front-end y Express para el back-end. La base de datos se construyó empleando SQLite.
 
 ### Cómo arrancar el backend
 
